@@ -1,0 +1,37 @@
+====================================
+PUSH TO GITHUB - EXACT COMMANDS
+====================================
+
+STEP 1: Get your GitHub token
+Go to: https://github.com/settings/tokens
+Click: "Generate new token (classic)"
+Select: ✓ repo
+Copy the token (starts with ghp_...)
+
+STEP 2: Navigate to the website-prod folder
+(It's in the same folder where you have OS-Website)
+
+Open Terminal/Command Prompt and run:
+
+cd website-prod
+
+git init
+
+git add .
+
+git commit -m "Initial commit: Operon OS website"
+
+git remote add origin https://YOUR_TOKEN@github.com/BrainHiveinc/operon.git
+
+git branch -M main
+
+git push -u origin main
+
+====================================
+EXAMPLE (with fake token):
+
+git remote add origin https://ghp_abc123xyz789@github.com/BrainHiveinc/operon.git
+git push -u origin main
+
+Done! ✅
+====================================

@@ -1,0 +1,71 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Agent Sri sensitive data (as requested by user)
+sri-agent/**/*.db
+sri-agent/**/*.env
+sri-agent/**/*credentials*
+sri-agent/**/*secrets*
+sri-agent/**/*key*
+sri-agent/.brainhive-agent/
+~/.brainhive-agent/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+
+# Development documentation (not needed for production)
+AGENT_SRI_INTEGRATION.md
+AGENT_SRI_SETUP.md
+AGENT_SRI_VISION.md
+COMPREHENSIVE_FIXES.md
+DEMO_FIXES_APPLIED.md
+DEPLOYMENT_GUIDE.md
+DEPLOY_NOW.md
+ENTERPRISE_TRANSFORMATION.md
+FIRST_TIME_EXPERIENCE.md
+FIXES_SUMMARY.md
+IMPLEMENTATION_SUMMARY.md
+IMPROVEMENT_RECOMMENDATIONS.md
+INSTALL_AGENT_SRI.md
+INTEGRATION_COMPLETE.md
+LAUNCH_READY_SUMMARY.md
+LIVE_GOVERNANCE_DEMO.md
+OPERON_OS_README.md
+PRODUCT_PAGE_STRUCTURE.md
+QUICKSTART.md
+ROADMAP.md
+WEBSITE_AUDIT.md
+START_AGENT_SRI.sh
+
+# Keep only essential docs
+!README.md
+!DEPLOY.md

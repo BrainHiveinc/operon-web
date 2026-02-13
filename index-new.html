@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Sri - AI Mission Executor</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            color: white;
+        }
+
+        .header {
+            padding: 30px;
+            text-align: center;
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .header h1 {
+            font-size: 48px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.7);
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .status-card {
+            flex: 1;
+            min-width: 200px;
+            padding: 20px;
+            background: rgba(255,255,255,0.08);
+            border-radius: 15px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .status-card.online {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .status-card.offline {
+            border-color: #ef4444;
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .status-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-value {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .mission-input {
+            background: rgba(255,255,255,0.08);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .mission-input h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 18px;
+            font-size: 16px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: white;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255,255,255,0.15);
+        }
+
+        input::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 18px;
+            font-size: 18px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 4px solid rgba(255,255,255,0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+            border: 2px solid #10b981;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .result-icon {
+            font-size: 40px;
+        }
+
+        .result-title {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .result-content {
+            font-size: 18px;
+            line-height: 1.8;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+        }
+
+        .error-card {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+            border: 2px solid #ef4444;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .example-btn {
+            padding: 15px;
+            background: rgba(255,255,255,0.1);
+            border: 2px solid rgba(255,255,255,0.2);
+            border-radius: 10px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+
+        .example-btn:hover {
+            background: rgba(255,255,255,0.15);
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .example-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 5px;
+        }
+
+        .example-text {
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Agent Sri</h1>
+        <p>Autonomous AI Mission Executor powered by Ollama</p>
+    </div>
+
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const PROXY_URL = 'http://localhost:5105/api';
+
+        function App() {
+            const [mission, setMission] = useState('');
+            const [result, setResult] = useState(null);
+            const [loading, setLoading] = useState(false);
+            const [error, setError] = useState(null);
+            const [proxyStatus, setProxyStatus] = useState('checking');
+            const [executionTime, setExecutionTime] = useState(0);
+
+            useEffect(() => {
+                checkStatus();
+                const interval = setInterval(checkStatus, 10000);
+                return () => clearInterval(interval);
+            }, []);
+
+            const checkStatus = async () => {
+                try {
+                    const response = await fetch(`${PROXY_URL}/tags`);
+                    if (response.ok) {
+                        setProxyStatus('online');
+                    } else {
+                        setProxyStatus('offline');
+                    }
+                } catch (err) {
+                    setProxyStatus('offline');
+                }
+            };
+
+            const executeMission = async (e) => {
+                e.preventDefault();
+                if (!mission.trim()) return;
+
+                setLoading(true);
+                setError(null);
+                setResult(null);
+                const startTime = Date.now();
+
+                try {
+                    console.log('[Agent Sri] Mission:', mission);
+
+                    const prompt = `You are Agent Sri, an AI agent that executes missions with precision.
+
+Mission: ${mission}
+
+Execute this mission and provide a clear, helpful, and thorough response.
+
+Response:`;
+
+                    const response = await fetch(`${PROXY_URL}/generate`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            model: 'llama3.2',
+                            prompt: prompt,
+                            stream: false,
+                            options: {
+                                temperature: 0.7,
+                                num_predict: 2000
+                            }
+                        })
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`Error: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    const aiResponse = data.response?.trim() || 'No response';
+
+                    console.log('[Agent Sri] ✅ Success:', aiResponse);
+
+                    setResult(aiResponse);
+                    setExecutionTime(((Date.now() - startTime) / 1000).toFixed(2));
+                    setProxyStatus('online');
+
+                } catch (err) {
+                    console.error('[Agent Sri] Error:', err);
+                    setError(err.message);
+                    setProxyStatus('offline');
+                } finally {
+                    setLoading(false);
+                }
+            };
+
+            const loadExample = (text) => {
+                setMission(text);
+            };
+
+            return (
+                <div className="container">
+                    <div className="status-bar">
+                        <div className={`status-card ${proxyStatus}`}>
+                            <div className="status-label">Status</div>
+                            <div className="status-value">
+                                {proxyStatus === 'online' ? '✅ Online' : '⚠️ Offline'}
+                            </div>
+                        </div>
+                        <div className="status-card">
+                            <div className="status-label">Model</div>
+                            <div className="status-value">llama3.2</div>
+                        </div>
+                        <div className="status-card">
+                            <div className="status-label">Last Execution</div>
+                            <div className="status-value">{executionTime}s</div>
+                        </div>
+                    </div>
+
+                    <div className="mission-input">
+                        <h2>🎯 Enter Mission</h2>
+                        <form onSubmit={executeMission}>
+                            <input
+                                type="text"
+                                value={mission}
+                                onChange={(e) => setMission(e.target.value)}
+                                placeholder="What should Agent Sri do? (e.g., research on bitcoin, write code, explain concepts...)"
+                                disabled={loading}
+                            />
+                            <button
+                                type="submit"
+                                disabled={loading || !mission.trim() || proxyStatus === 'offline'}
+                            >
+                                {loading ? '🔄 Executing Mission...' : '🚀 Execute Mission'}
+                            </button>
+                        </form>
+
+                        <div className="examples">
+                            <button className="example-btn" onClick={() => loadExample('research on bitcoin and explain its advantages')}>
+                                <div className="example-label">Research</div>
+                                <div className="example-text">Bitcoin Research</div>
+                            </button>
+                            <button className="example-btn" onClick={() => loadExample('write a python function to calculate fibonacci')}>
+                                <div className="example-label">Code</div>
+                                <div className="example-text">Python Code</div>
+                            </button>
+                            <button className="example-btn" onClick={() => loadExample('explain quantum computing in simple terms')}>
+                                <div className="example-label">Explain</div>
+                                <div className="example-text">Quantum Computing</div>
+                            </button>
+                            <button className="example-btn" onClick={() => loadExample('what is 2342 + 8765')}>
+                                <div className="example-label">Math</div>
+                                <div className="example-text">Calculate</div>
+                            </button>
+                        </div>
+                    </div>
+
+                    {loading && (
+                        <div className="loading">
+                            <div className="spinner"></div>
+                            <div style={{fontSize: '18px', fontWeight: 600}}>
+                                AI is processing your mission...
+                            </div>
+                        </div>
+                    )}
+
+                    {result && (
+                        <div className="result-card">
+                            <div className="result-header">
+                                <div className="result-icon">✨</div>
+                                <div>
+                                    <div style={{fontSize: '14px', opacity: 0.7}}>Mission Complete</div>
+                                    <div className="result-title">{mission}</div>
+                                </div>
+                            </div>
+                            <div className="result-content">{result}</div>
+                        </div>
+                    )}
+
+                    {error && (
+                        <div className="error-card">
+                            <div className="error-title">
+                                <span>⚠️</span>
+                                <span>Mission Failed</span>
+                            </div>
+                            <div style={{fontSize: '16px', marginTop: '10px'}}>
+                                {error}
+                            </div>
+                            <div style={{fontSize: '14px', marginTop: '15px', opacity: 0.8}}>
+                                Make sure the proxy is running: <code>python3 ollama-proxy.py</code>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        ReactDOM.render(<App />, document.getElementById('root'));
+    </script>
+</body>
+</html>

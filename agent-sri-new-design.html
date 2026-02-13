@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Sri Command Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: #000;
+            color: #0f0;
+            overflow-x: hidden;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                linear-gradient(90deg, rgba(0,255,0,0.03) 1px, transparent 1px),
+                linear-gradient(rgba(0,255,0,0.03) 1px, transparent 1px);
+            background-size: 20px 20px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            border: 3px solid #0f0;
+            padding: 30px;
+            margin-bottom: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .header h1 {
+            font-size: 48px;
+            text-shadow: 0 0 10px #0f0;
+            letter-spacing: 5px;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 16px;
+            color: #0f0;
+            opacity: 0.8;
+        }
+
+        .terminal {
+            background: #000;
+            border: 3px solid #0f0;
+            padding: 20px;
+            margin-bottom: 20px;
+            font-family: 'Courier New', monospace;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .terminal-header {
+            font-size: 14px;
+            margin-bottom: 15px;
+            color: #0f0;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .status-box {
+            border: 2px solid #0f0;
+            padding: 20px;
+            background: rgba(0, 255, 0, 0.05);
+            text-align: center;
+        }
+
+        .status-label {
+            font-size: 12px;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .status-value {
+            font-size: 24px;
+            font-weight: bold;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        .input-section {
+            border: 3px solid #0f0;
+            padding: 30px;
+            background: rgba(0, 0, 0, 0.8);
+            margin-bottom: 20px;
+        }
+
+        .prompt {
+            color: #0f0;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        input {
+            width: 100%;
+            padding: 15px;
+            background: #000;
+            border: 2px solid #0f0;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+
+        input:focus {
+            outline: none;
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+        }
+
+        input::placeholder {
+            color: rgba(0, 255, 0, 0.5);
+        }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            background: #000;
+            border: 3px solid #0f0;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            transition: all 0.3s;
+        }
+
+        button:hover:not(:disabled) {
+            background: #0f0;
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.8);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .quick-missions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .quick-mission {
+            border: 2px solid #0f0;
+            padding: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .quick-mission:hover {
+            background: rgba(0, 255, 0, 0.15);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .mission-type {
+            font-size: 11px;
+            opacity: 0.7;
+            margin-bottom: 8px;
+        }
+
+        .mission-text {
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .output-box {
+            border: 3px solid #0f0;
+            padding: 30px;
+            background: #000;
+            margin-top: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+        }
+
+        .output-header {
+            font-size: 14px;
+            color: #0f0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #0f0;
+            padding-bottom: 10px;
+        }
+
+        .mission-query {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #0f0;
+            text-shadow: 0 0 5px #0f0;
+        }
+
+        .ai-output {
+            font-size: 16px;
+            line-height: 1.8;
+            color: #0f0;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            border-left: 3px solid #0f0;
+            padding-left: 20px;
+            margin-top: 20px;
+        }
+
+        .loading-box {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .loader {
+            border: 4px solid rgba(0, 255, 0, 0.2);
+            border-top: 4px solid #0f0;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error-box {
+            border: 3px solid #f00;
+            padding: 30px;
+            background: rgba(255, 0, 0, 0.1);
+            color: #f00;
+            margin-top: 20px;
+        }
+
+        .blink {
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .timestamp {
+            font-size: 12px;
+            opacity: 0.6;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="matrix-bg"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1>⚡ AGENT SRI</h1>
+            <p>> AUTONOMOUS AI MISSION EXECUTOR v2.0</p>
+        </div>
+
+        <div class="status-grid">
+            <div class="status-box">
+                <div class="status-label">SYSTEM STATUS</div>
+                <div class="status-value" id="systemStatus">INIT...</div>
+            </div>
+            <div class="status-box">
+                <div class="status-label">AI MODEL</div>
+                <div class="status-value">LLAMA3.2</div>
+            </div>
+            <div class="status-box">
+                <div class="status-label">EXEC TIME</div>
+                <div class="status-value" id="execTime">0.0s</div>
+            </div>
+            <div class="status-box">
+                <div class="status-label">MISSIONS</div>
+                <div class="status-value" id="missionCount">0</div>
+            </div>
+        </div>
+
+        <div class="input-section">
+            <div class="terminal-header">>> MISSION COMMAND INTERFACE</div>
+            <div class="prompt">&gt; ENTER MISSION DIRECTIVE:</div>
+            <input
+                type="text"
+                id="missionInput"
+                placeholder="TYPE COMMAND... (research, analyze, code, calculate)"
+                autocomplete="off"
+            />
+            <button id="executeBtn">▶ EXECUTE MISSION</button>
+
+            <div class="quick-missions">
+                <div class="quick-mission" onclick="setMission('analyze bitcoin technology and explain key benefits')">
+                    <div class="mission-type">[RESEARCH]</div>
+                    <div class="mission-text">BITCOIN ANALYSIS</div>
+                </div>
+                <div class="quick-mission" onclick="setMission('write python code for fibonacci sequence')">
+                    <div class="mission-type">[CODE GEN]</div>
+                    <div class="mission-text">PYTHON FIBONACCI</div>
+                </div>
+                <div class="quick-mission" onclick="setMission('explain quantum computing concepts')">
+                    <div class="mission-type">[ANALYSIS]</div>
+                    <div class="mission-text">QUANTUM COMPUTING</div>
+                </div>
+                <div class="quick-mission" onclick="setMission('calculate 8765 + 4321')">
+                    <div class="mission-type">[COMPUTE]</div>
+                    <div class="mission-text">MATH OPERATION</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="outputContainer"></div>
+    </div>
+
+    <script>
+        const PROXY = 'http://localhost:5105/api';
+        let missionCounter = 0;
+
+        // Check system status
+        async function checkStatus() {
+            try {
+                const res = await fetch(`${PROXY}/tags`);
+                if (res.ok) {
+                    document.getElementById('systemStatus').textContent = 'ONLINE';
+                    document.getElementById('systemStatus').style.color = '#0f0';
+                    return true;
+                }
+            } catch (err) {
+                document.getElementById('systemStatus').innerHTML = 'OFFLINE<span class="blink">_</span>';
+                document.getElementById('systemStatus').style.color = '#f00';
+                return false;
+            }
+        }
+
+        async function executeMission() {
+            const mission = document.getElementById('missionInput').value.trim();
+            if (!mission) return;
+
+            const executeBtn = document.getElementById('executeBtn');
+            executeBtn.disabled = true;
+            executeBtn.textContent = '⏳ PROCESSING...';
+
+            const outputContainer = document.getElementById('outputContainer');
+            outputContainer.innerHTML = `
+                <div class="terminal">
+                    <div class="loading-box">
+                        <div class="loader"></div>
+                        <div style="font-size: 16px;">>> AI CORE PROCESSING MISSION...</div>
+                    </div>
+                </div>
+            `;
+
+            const startTime = Date.now();
+
+            try {
+                console.log('[AGENT SRI] MISSION:', mission);
+
+                const prompt = `You are Agent Sri, an advanced AI mission executor.
+
+MISSION: ${mission}
+
+Execute this mission with precision. Provide clear, actionable intelligence.
+
+RESPONSE:`;
+
+                const res = await fetch(`${PROXY}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'llama3.2',
+                        prompt: prompt,
+                        stream: false,
+                        options: {
+                            temperature: 0.7,
+                            num_predict: 2000
+                        }
+                    })
+                });
+
+                if (!res.ok) throw new Error(`ERROR CODE ${res.status}`);
+
+                const data = await res.json();
+                const aiResponse = data.response?.trim() || 'NO RESPONSE';
+
+                const execTime = ((Date.now() - startTime) / 1000).toFixed(2);
+                document.getElementById('execTime').textContent = `${execTime}s`;
+
+                missionCounter++;
+                document.getElementById('missionCount').textContent = missionCounter;
+
+                console.log('[AGENT SRI] SUCCESS:', aiResponse);
+
+                outputContainer.innerHTML = `
+                    <div class="output-box">
+                        <div class="output-header">✓ MISSION COMPLETE [${new Date().toLocaleTimeString()}]</div>
+                        <div class="mission-query">&gt;&gt; ${escapeHtml(mission)}</div>
+                        <div class="ai-output">${escapeHtml(aiResponse)}</div>
+                        <div class="timestamp">EXECUTION TIME: ${execTime}s | STATUS: SUCCESS</div>
+                    </div>
+                `;
+
+                document.getElementById('systemStatus').textContent = 'ONLINE';
+                document.getElementById('systemStatus').style.color = '#0f0';
+
+            } catch (err) {
+                console.error('[AGENT SRI] ERROR:', err);
+
+                outputContainer.innerHTML = `
+                    <div class="error-box">
+                        <div style="font-size: 20px; margin-bottom: 15px;">✗ MISSION FAILED</div>
+                        <div style="font-size: 16px;">${escapeHtml(err.message)}</div>
+                        <div style="margin-top: 20px; font-size: 14px;">
+                            >> ENSURE PROXY RUNNING: python3 ollama-proxy.py
+                        </div>
+                    </div>
+                `;
+
+                document.getElementById('systemStatus').innerHTML = 'ERROR<span class="blink">_</span>';
+                document.getElementById('systemStatus').style.color = '#f00';
+            } finally {
+                executeBtn.disabled = false;
+                executeBtn.textContent = '▶ EXECUTE MISSION';
+            }
+        }
+
+        function setMission(text) {
+            document.getElementById('missionInput').value = text;
+            document.getElementById('missionInput').focus();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event listeners
+        document.getElementById('executeBtn').addEventListener('click', executeMission);
+        document.getElementById('missionInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') executeMission();
+        });
+
+        // Initialize
+        checkStatus();
+        setInterval(checkStatus, 10000);
+    </script>
+</body>
+</html>

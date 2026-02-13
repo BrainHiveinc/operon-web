@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Sri - Real AI Execution</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background: #0a0e27;
+            color: #fff;
+            min-height: 100vh;
+            background-image:
+                radial-gradient(at 0% 0%, rgba(102, 126, 234, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(118, 75, 162, 0.15) 0px, transparent 50%);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        h1 {
+            font-size: 56px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            font-size: 18px;
+            color: #8b9dc3;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 700;
+            margin-top: 20px;
+        }
+
+        .status.online {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            border: 2px solid #10b981;
+        }
+
+        .status.offline {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+            border: 2px solid #ef4444;
+        }
+
+        .mission-box {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+        }
+
+        .mission-box h2 {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #fff;
+        }
+
+        input {
+            width: 100%;
+            padding: 20px;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.08);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            color: #fff;
+            margin-bottom: 20px;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        button {
+            width: 100%;
+            padding: 20px;
+            font-size: 20px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: none;
+            border-radius: 12px;
+            color: #fff;
+            cursor: pointer;
+            font-family: 'Space Grotesk', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        button:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.5);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .result-box {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(5, 150, 105, 0.15));
+            border: 3px solid #10b981;
+            border-radius: 20px;
+            padding: 50px;
+            margin-top: 30px;
+            animation: fadeIn 0.5s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-header {
+            font-size: 16px;
+            color: #10b981;
+            margin-bottom: 15px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .mission-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #fff;
+        }
+
+        .ai-response {
+            font-size: 20px;
+            line-height: 1.8;
+            color: #e5e7eb;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            border-radius: 12px;
+            border-left: 4px solid #10b981;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 5px solid rgba(102, 126, 234, 0.2);
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .error-box {
+            background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
+            border: 3px solid #ef4444;
+            border-radius: 20px;
+            padding: 40px;
+            margin-top: 30px;
+        }
+
+        .error-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: #ef4444;
+        }
+
+        .error-message {
+            font-size: 18px;
+            line-height: 1.6;
+            color: #fca5a5;
+        }
+
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .example {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .example:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #667eea;
+            transform: translateY(-3px);
+        }
+
+        .example-label {
+            font-size: 12px;
+            color: #8b9dc3;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .example-text {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 36px; }
+            .examples { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🤖 Agent Sri</h1>
+            <p class="tagline">Real AI • No Hardcoded Responses • Powered by llama3.2</p>
+            <div class="status" id="status">⏳ Checking...</div>
+        </header>
+
+        <div class="mission-box">
+            <h2>💫 What should I execute?</h2>
+            <input
+                type="text"
+                id="missionInput"
+                placeholder="Type your mission... (research, code, math, analysis, etc.)"
+            />
+            <button id="executeBtn">🚀 Execute Mission</button>
+
+            <div class="examples">
+                <div class="example" onclick="setMission('research on bitcoin and its future')">
+                    <div class="example-label">Research</div>
+                    <div class="example-text">Bitcoin Research</div>
+                </div>
+                <div class="example" onclick="setMission('write a fibonacci function in python')">
+                    <div class="example-label">Code</div>
+                    <div class="example-text">Python Code</div>
+                </div>
+                <div class="example" onclick="setMission('explain quantum computing simply')">
+                    <div class="example-label">Explain</div>
+                    <div class="example-text">Quantum Computing</div>
+                </div>
+                <div class="example" onclick="setMission('what is 9234 + 5678')">
+                    <div class="example-label">Math</div>
+                    <div class="example-text">Calculate</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="output"></div>
+    </div>
+
+    <script>
+        const PROXY = 'http://localhost:5105/api';
+        const statusEl = document.getElementById('status');
+        const missionInput = document.getElementById('missionInput');
+        const executeBtn = document.getElementById('executeBtn');
+        const output = document.getElementById('output');
+
+        // Check status
+        async function checkStatus() {
+            try {
+                const res = await fetch(`${PROXY}/tags`);
+                if (res.ok) {
+                    statusEl.className = 'status online';
+                    statusEl.textContent = '✅ AI Ready';
+                    return true;
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                statusEl.className = 'status offline';
+                statusEl.textContent = '❌ Offline - Start proxy: python3 ollama-proxy.py';
+                return false;
+            }
+        }
+
+        // Execute mission
+        async function executeMission() {
+            const mission = missionInput.value.trim();
+            if (!mission) return;
+
+            executeBtn.disabled = true;
+            executeBtn.textContent = '🔄 Executing...';
+
+            output.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <div style="font-size: 20px; font-weight: 700;">AI is processing your mission...</div>
+                </div>
+            `;
+
+            try {
+                console.log('[Agent Sri] Mission:', mission);
+
+                const prompt = `You are Agent Sri, an AI agent that executes missions.
+
+Mission: ${mission}
+
+Execute this mission and provide a clear, helpful, thorough response.
+
+Response:`;
+
+                const res = await fetch(`${PROXY}/generate`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        model: 'llama3.2',
+                        prompt: prompt,
+                        stream: false,
+                        options: {
+                            temperature: 0.7,
+                            num_predict: 2000
+                        }
+                    })
+                });
+
+                if (!res.ok) throw new Error(`Error ${res.status}`);
+
+                const data = await res.json();
+                const aiResponse = data.response?.trim() || 'No response';
+
+                console.log('[Agent Sri] ✅ Success:', aiResponse);
+
+                output.innerHTML = `
+                    <div class="result-box">
+                        <div class="result-header">✨ Mission Complete</div>
+                        <div class="mission-title">${escapeHtml(mission)}</div>
+                        <div class="ai-response">${escapeHtml(aiResponse)}</div>
+                    </div>
+                `;
+
+                statusEl.className = 'status online';
+                statusEl.textContent = '✅ AI Ready';
+
+            } catch (err) {
+                console.error('[Agent Sri] Error:', err);
+
+                output.innerHTML = `
+                    <div class="error-box">
+                        <div class="error-title">⚠️ Mission Failed</div>
+                        <div class="error-message">
+                            ${escapeHtml(err.message)}<br><br>
+                            Make sure the proxy is running:<br>
+                            <code>python3 ollama-proxy.py</code>
+                        </div>
+                    </div>
+                `;
+
+                statusEl.className = 'status offline';
+                statusEl.textContent = '❌ Offline';
+            } finally {
+                executeBtn.disabled = false;
+                executeBtn.textContent = '🚀 Execute Mission';
+            }
+        }
+
+        function setMission(text) {
+            missionInput.value = text;
+            missionInput.focus();
+        }
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Event listeners
+        executeBtn.addEventListener('click', executeMission);
+        missionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') executeMission();
+        });
+
+        // Initial status check
+        checkStatus();
+        setInterval(checkStatus, 10000);
+    </script>
+</body>
+</html>
