@@ -120,25 +120,25 @@ export function AgentOrchestrator() {
   const activeCount = agents.filter(a => a.status === "active").length;
 
   return (
-    <div className="glass-card p-6 rounded-xl border border-primary/20">
+    <div className="glass-card p-3 sm:p-6 rounded-xl border border-primary/20">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between mb-4 sm:mb-6">
+        <div className="flex items-center gap-2 sm:gap-3">
           <motion.div
             animate={{ rotate: 360 }}
             transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
             className="relative"
           >
-            <Activity className="w-5 h-5 text-primary" />
+            <Activity className="w-4 h-4 sm:w-5 sm:h-5 text-primary" />
             <motion.div
               className="absolute inset-0 rounded-full bg-primary/30"
               animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
               transition={{ duration: 2, repeat: Infinity }}
             />
           </motion.div>
-          <h3 className="text-lg font-semibold text-foreground">Live Agents Network</h3>
+          <h3 className="text-sm sm:text-lg font-semibold text-foreground">Live Agents Network</h3>
         </div>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           <div className="text-xs text-muted-foreground">
             <span className="text-primary font-medium">{activeCount}</span> active
           </div>
@@ -155,7 +155,7 @@ export function AgentOrchestrator() {
       </div>
 
       {/* Network Visualization */}
-      <div className="relative w-full aspect-[16/10] bg-gradient-to-br from-background via-primary/5 to-background rounded-lg border border-primary/10 overflow-hidden">
+      <div className="relative w-full aspect-square sm:aspect-[16/10] bg-gradient-to-br from-background via-primary/5 to-background rounded-lg border border-primary/10 overflow-hidden">
         {/* Background grid */}
         <div className="absolute inset-0 opacity-10" style={{
           backgroundImage: `

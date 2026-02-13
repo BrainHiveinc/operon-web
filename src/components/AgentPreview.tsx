@@ -105,17 +105,21 @@ export function AgentPreview() {
   const progress = (completedSteps / steps.length) * 100;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Agent Selector */}
-      <Card className="glass-card p-6">
-        <h3 className="text-xl font-display font-bold mb-4">
+      <Card className="glass-card p-3 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-display font-bold mb-3 sm:mb-4">
           Live Agent Preview
         </h3>
 
         <Tabs value={selectedAgent} onValueChange={setSelectedAgent}>
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-3 mb-4 sm:mb-6 h-auto">
             {AGENT_TYPES.slice(0, 3).map((agent) => (
-              <TabsTrigger key={agent.id} value={agent.id}>
+              <TabsTrigger
+                key={agent.id}
+                value={agent.id}
+                className="text-xs sm:text-sm py-2 px-2 sm:px-3"
+              >
                 {agent.name}
               </TabsTrigger>
             ))}
@@ -123,16 +127,16 @@ export function AgentPreview() {
 
           {AGENT_TYPES.slice(0, 3).map((agent) => (
             <TabsContent key={agent.id} value={agent.id}>
-              <div className="flex items-start gap-4 p-4 rounded-lg bg-secondary/30">
-                <div className="w-12 h-12 rounded-xl bg-primary/10 border-2 border-primary/30 flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
-                  <Zap className="w-6 h-6 text-primary" />
+              <div className="flex flex-col sm:flex-row items-start gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg bg-secondary/30">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-primary/10 border-2 border-primary/30 flex items-center justify-center flex-shrink-0 backdrop-blur-sm">
+                  <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-semibold mb-1">{agent.name}</h4>
-                  <p className="text-sm text-muted-foreground mb-3">
+                  <h4 className="font-semibold mb-1 text-sm sm:text-base">{agent.name}</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground mb-2 sm:mb-3">
                     {agent.description}
                   </p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5 sm:gap-2">
                     {agent.capabilities.slice(0, 4).map((cap, idx) => (
                       <Badge key={idx} variant="secondary" className="text-xs">
                         {cap}

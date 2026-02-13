@@ -269,15 +269,15 @@ function LifecycleSection() {
           viewport={{ once: true }}
           className="mt-16"
         >
-          <div className="text-center mb-8">
-            <h3 className="text-2xl sm:text-3xl font-display font-bold mb-3">
+          <div className="text-center mb-6 sm:mb-8">
+            <h3 className="text-xl sm:text-2xl md:text-3xl font-display font-bold mb-2 sm:mb-3 px-4">
               Watch Proposals Flow <span className="gradient-text">Live</span>
             </h3>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground px-4">
               See the Heartbeat framework in action as proposals move through each governance stage
             </p>
           </div>
-          <div className="max-w-6xl mx-auto glass-card p-8 border-2 border-primary/20">
+          <div className="max-w-6xl mx-auto glass-card p-3 sm:p-6 md:p-8 border-2 border-primary/20">
             <HeartbeatLiveAnimation />
           </div>
         </motion.div>
