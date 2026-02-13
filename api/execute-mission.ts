@@ -47,7 +47,7 @@ export default async function handler(req: any, res: any) {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'llama-3.1-70b-versatile', // Fast, smart, FREE
+        model: 'llama-3.3-70b-versatile', // Updated model - Fast, smart, FREE
         messages: [
           {
             role: 'system',
