@@ -3,11 +3,11 @@ import { Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [theme, setTheme] = useState<"dark" | "light">("light");
 
   useEffect(() => {
     const stored = localStorage.getItem("theme") as "dark" | "light" | null;
-    const initialTheme = stored || "dark"; // Default to dark mode
+    const initialTheme = stored || "light"; // Default to light mode
     setTheme(initialTheme);
 
     // Apply the appropriate class
