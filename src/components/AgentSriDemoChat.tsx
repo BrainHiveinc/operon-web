@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 import { LogoWithHeartbeat } from "./LogoWithHeartbeat";
 import { ExecutionVisualizer } from "./ExecutionVisualizer";
 import { Mission } from "./LiveGovernanceDemo";
-import { AgentApiService } from "@/services/agentApi";
+import { processUserRequest } from "@/services/agentSriCore";
 import { AGENT_SRI_KNOWLEDGE, KNOWLEDGE_SUMMARY } from "@/data/agent-sri-knowledge";
 
 interface AgentSriDemoProps {
@@ -102,59 +102,53 @@ export function AgentSriDemoChat({ open, onClose, onUserComplete }: AgentSriDemo
     }, 500);
 
     try {
-      // Smart prompt: Only add Operon context for Operon-related questions
-      const isOperonQuestion = missionText.toLowerCase().match(
-        /operon|agent|governance|mission|validate|audit|platform|pricing|feature|capability|what do you do|what can you|who are you/i
-      );
-
-      const enhancedDescription = isOperonQuestion
-        ? `You are Agent Sri, a helpful AI agent demonstrating Operon OS capabilities.
-
-OPERON OS OVERVIEW:
-- Kubernetes for AI agents: orchestration, reliability, governance at scale
-- Battle-tested: 200 concurrent missions, 0 failures, ~30s p50 latency
-- Orchestrates ChatGPT, Claude, Gemini, Grok, and other AI models together
-- Key features: mission runner, validators, retries, audit logs, governance controls
-
-USER: ${missionText}
-
-Respond naturally and helpfully. Mention Operon OS features only when directly relevant to their question. Be conversational and friendly. Keep responses SHORT (2-3 sentences).`
-        : `You are Agent Sri, a friendly and helpful AI assistant.
-
-USER: ${missionText}
-
-Respond naturally and conversationally. Be warm and helpful. Keep it SHORT (1-2 sentences).
-
-Examples:
-- "hi" → "Hi! How can I help you today?"
-- "230+23" → "230 + 23 = 253"
-- "what's the weather" → "I don't have real-time weather data, but I can help with other questions!"`;
-
-      // Call real AI
-      const response = await AgentApiService.executeMission({
-        description: enhancedDescription
+      // Process through autonomous agent
+      const result = await processUserRequest(missionText, {
+        operonContext: KNOWLEDGE_SUMMARY,
+        userContext: {
+          conversationLength: messages.length,
+          previousTopics: messages.slice(-3).map(m => m.content)
+        }
       });
 
       // Update mission as completed
       setCurrentMission(prev => prev ? {
         ...prev,
-        status: "completed",
+        status: result.success ? "completed" : "failed",
         endTime: Date.now(),
-        tasks: [
-          { id: "task_1", name: "Mission completed", status: "completed", progress: 100 }
-        ],
+        tasks: result.steps.map((step, i) => ({
+          id: `task_${i}`,
+          name: step.description,
+          status: step.success ? "completed" : "failed",
+          progress: step.success ? 100 : 0
+        })),
         governanceChecks: [
-          { id: "gc_1", type: "policy", description: "Security validated", status: "passed", timestamp: Date.now() }
+          {
+            id: "gc_1",
+            type: "policy",
+            description: result.success ? "All checks passed" : "Execution failed",
+            status: result.success ? "passed" : "failed",
+            timestamp: Date.now()
+          }
         ]
       } : null);
 
       // Remove processing message and add agent response
       setMessages(prev => {
         const filtered = prev.filter(m => m.id !== processingMessage.id);
+
+        // Create response content
+        let responseContent = result.summary;
+
+        // Add learning indicator if agent learned from this
+        if (result.learned) {
+          responseContent += "\n\n✨ (Agent learned new patterns from this interaction)";
+        }
+
         const agentMessage: ChatMessage = {
           id: `agent_${Date.now()}`,
           type: 'agent',
-          content: response.mission.result.sections[0]?.content || 'No response',
+          content: responseContent,
           timestamp: Date.now(),
           status: 'complete'
         };
