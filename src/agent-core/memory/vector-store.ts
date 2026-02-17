@@ -270,25 +270,4 @@ export class VectorMemory {
       vocabularySize: this.vocabulary.size
     };
   }
-
-  async analyzePatterns(query: string): Promise<any> {
-    // Analyze patterns related to query
-    const relevantPatterns = this.patterns.filter(p =>
-      p.description.toLowerCase().includes(query.toLowerCase())
-    );
-
-    return {
-      query,
-      patterns: relevantPatterns,
-      totalPatterns: this.patterns.length,
-      avgSuccessRate: relevantPatterns.length > 0
-        ? relevantPatterns.reduce((sum, p) => sum + p.successRate, 0) / relevantPatterns.length
-        : 0
-    };
-  }
-
-  async getComponentPatterns(): Promise<any[]> {
-    // Return patterns specifically for component generation
-    return this.patterns.filter(p => p.type === 'component');
-  }
 }

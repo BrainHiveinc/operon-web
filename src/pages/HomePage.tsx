@@ -92,8 +92,8 @@ function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
             transition={{ delay: 0.4 }}
             className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-display font-bold tracking-tight mb-6 px-4 sm:px-0"
           >
-            <span className="gradient-text">AI agents</span>{" "}
-            <span className="text-foreground">you can govern.</span>
+            <span className="text-foreground">AI Experimentation to</span>{" "}
+            <span className="gradient-text">Production Autonomy</span>
           </motion.h1>
 
           {/* Battle-Tested Stats */}
@@ -123,7 +123,7 @@ function HeroSection({ onOpenDemo }: { onOpenDemo: () => void }) {
 
           {/* Subhead */}
           <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-8 sm:mb-10 px-4 sm:px-0">
-            Build your autonomous AI workforce with enterprise-grade governance. Think of it as Kubernetes for AI agents—orchestration, reliability, and governance at scale.
+            Operon OS provides the execution control, observability, and governance enterprises need to operate autonomous systems reliably at scale.
           </p>
 
           {/* Hero CTA - Prominent Agent Sri Demo */}

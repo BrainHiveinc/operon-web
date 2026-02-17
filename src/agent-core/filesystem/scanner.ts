@@ -127,10 +127,6 @@ export class FileSystemScanner {
     return this.analyzeCode(path);
   }
 
-  detectLanguage(): string {
-    return this.detectPrimaryLanguage();
-  }
-
   detectPrimaryLanguage(): string {
     const languageCounts = new Map<string, number>();
 
