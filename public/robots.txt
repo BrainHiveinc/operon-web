@@ -1,3 +1,6 @@
+# Operon OS - Robots.txt
+# https://operonos.com
+
 User-agent: Googlebot
 Allow: /
 
@@ -10,5 +13,14 @@ Allow: /
 User-agent: facebookexternalhit
 Allow: /
 
+User-agent: LinkedInBot
+Allow: /
+
+User-agent: Slackbot
+Allow: /
+
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://operonos.com/sitemap.xml
